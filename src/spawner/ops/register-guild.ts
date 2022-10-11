@@ -5,6 +5,6 @@ import * as CtxRepo from "../repos/guild-contexts"
 
 export const run = (guildId: Snowflake) =>
   pipe(
-    CtxRepo.upsert(guildId, new Date()),
+    CtxRepo.upsert(guildId),
     RTE.map(() => {})
   )

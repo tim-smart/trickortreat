@@ -50,7 +50,7 @@ export const thatNeedSpawn = pipe(
   )
 )
 
-export const upsert = (guildId: Snowflake, nextMessage: Date) =>
+export const upsert = (guildId: Snowflake) =>
   pipe(
     RTE.ask<DbContext>(),
     RTE.chainTaskEitherK(
@@ -59,11 +59,26 @@ export const upsert = (guildId: Snowflake, nextMessage: Date) =>
           guildCtxCollection.updateOne(
             { guildId },
             {
-              $setOnInsert: { nextMessage },
+              $setOnInsert: { nextMessage: new Date() },
               $set: { disabled: false },
             },
             { upsert: true }
           ),
+        (reason): GuildCtxRepoError => ({
+          _tag: "DbError",
+          reason,
+        })
+      )
+    )
+  )
+
+export const update = (guildId: Snowflake, nextMessage: Date) =>
+  pipe(
+    RTE.ask<DbContext>(),
+    RTE.chainTaskEitherK(
+      TE.tryCatchK(
+        ({ guildCtxCollection }) =>
+          guildCtxCollection.updateOne({ guildId }, { $set: { nextMessage } }),
         (reason): GuildCtxRepoError => ({
           _tag: "DbError",
           reason,

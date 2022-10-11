@@ -30,7 +30,7 @@ const sendMessageAndUpdateGuild = (ctx: WithId<GuildContext>) =>
       )
     ),
     RTE.chainW(() => CalcNext.run(ctx.guildId)),
-    RTE.chainW((nextMessage) => CtxRepo.upsert(ctx.guildId, nextMessage))
+    RTE.chainW((nextMessage) => CtxRepo.update(ctx.guildId, nextMessage))
   )
 
 const getChannelId = (ctx: WithId<GuildContext>) =>
