@@ -8,7 +8,7 @@ import {
   NonParentCacheStore,
   NonParentCacheStoreHelpers,
 } from "droff/caches/stores"
-import { createNonParent } from "droff/caches/stores/memory"
+import { createNonParent } from "droff/caches/stores/memory-ttl"
 import { Guild } from "droff/types"
 import { Collection, Db } from "mongodb"
 import * as Rx from "rxjs"
@@ -26,17 +26,27 @@ export interface CacheContext {
   textChannels: CacheStore<void> & CacheStoreHelpers<void>
 }
 
+const second = 1000
+const minute = 60 * second
+const hour = 60 * minute
+
 export const createCacheContext = (
   c: Client
 ): readonly [CacheContext, Rx.Observable<void>] => {
   const guildsCache = addNonParentHelpers<Guild, NonParentCacheStore<Guild>>(
-    createNonParent()
+    createNonParent({
+      ttl: 2 * hour,
+      strategy: "expiry",
+    })
   )
   const [textChannels, textChannels$] = c.cacheFromWatch(
     Caches.textChannelIds(c.fromDispatch)
   )()
 
-  return [{ guildsCache, textChannels }, textChannels$] as const
+  return [
+    { guildsCache, textChannels },
+    Rx.merge(guildsCache.effects$!, textChannels$),
+  ] as const
 }
 
 export interface DbContext {

@@ -13,9 +13,9 @@ export const run = (guildId: Snowflake) =>
   pipe(
     getGuildWithCounts(guildId),
     RTE.chainNullableK({ _tag: "NoCounts" } as CalculateNextMessageErr)(
-      (g) => g.approximate_member_count
+      (g) => g.approximate_presence_count
     ),
-    RTE.map(nextMessageFromMemberCount)
+    RTE.map(nextMessageFromOnlineCount)
   )
 
 const getGuildWithCounts = (guildId: Snowflake) =>
@@ -39,9 +39,9 @@ const getGuildWithCounts = (guildId: Snowflake) =>
 const minMinutes = 1
 const maxMinutes = 60 * 3
 
-const maxCount = 50000
+const maxCount = 10000
 
-const nextMessageFromMemberCount = (count: number) => {
+const nextMessageFromOnlineCount = (count: number) => {
   if (count >= maxCount) {
     return DF.addMinutes(Date.now(), minMinutes)
   }
