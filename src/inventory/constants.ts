@@ -23,7 +23,7 @@ export const candyTypes = [
     prefix: "some",
     sugar: 7,
     image:
-      "https://www.skittles.com/cdn-cgi/image/width=277,height=277,f=auto,quality=90/sites/g/files/fnmzdf586/files/migrate-product-files/bam8afcev37jvz2mfpnk.png",
+      "https://compote.slate.com/images/79fb3cf9-c3a6-403c-b29a-d9bb6f086a36.jpeg?crop=1560%2C1040%2Cx0%2Cy0&width=960",
     frequency: 2,
   },
   {
