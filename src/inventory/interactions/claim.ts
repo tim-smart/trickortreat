@@ -70,7 +70,7 @@ const sendFollowUp = ({ respond }: InteractionContext, candy: Candy) =>
       respond(InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE)({
         content: `You claimed the ${candy.name}, worth ${candy.sugar} sugar points!
         
-Use **/candy inventory** to see your stockpile.`,
+Use **/candy check-bag** to see your stash.`,
         flags: MessageFlag.EPHEMERAL,
       }),
     (reason): CommandError => ({

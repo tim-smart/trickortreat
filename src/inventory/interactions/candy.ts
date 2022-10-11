@@ -23,12 +23,12 @@ export const register = (
   const commands = ctx.ix.guild(command).pipe(RxO.share())
 
   const inventory = commands.pipe(
-    IxO.withSubCommand("inventory"),
+    IxO.withSubCommand(Inventory.command.name),
     RxO.flatMap((a) => Inventory.handle(a)(ctx)())
   )
 
   const give = commands.pipe(
-    IxO.withSubCommand("give"),
+    IxO.withSubCommand(Give.command.name),
     RxO.flatMap((a) => Give.handle(a)(ctx)())
   )
 
