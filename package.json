@@ -5,7 +5,8 @@
   "author": "Tim Smart <hello@timsmart.co>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/main.ts"
+    "dev": "nodemon src/main.ts",
+    "build": "rm -rf dist && tsc"
   },
   "dependencies": {
     "@top-gg/sdk": "^3.1.3",
