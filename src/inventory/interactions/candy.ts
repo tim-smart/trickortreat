@@ -20,7 +20,7 @@ const command: CreateGlobalApplicationCommandParams = {
 export const register = (
   ctx: ClientContext & InteractionsContext & DbContext
 ): Rx.Observable<void> => {
-  const commands = ctx.ix.guild(command).pipe(RxO.share())
+  const commands = ctx.ix.global(command).pipe(RxO.share())
 
   const inventory = commands.pipe(
     IxO.withSubCommand(Inventory.command.name),
