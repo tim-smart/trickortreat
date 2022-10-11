@@ -39,7 +39,7 @@ const sendEmbed = (x: InteractionContext, i: Inventory) =>
           Object.keys(i).map((id) => candyTypeMap[id as CandyIds]),
           choiceSearch(x.focusedOption?.value),
           Arr.map(({ name, id }) => ({
-            name,
+            name: `${name} (${i[id]})`,
             value: id,
           }))
         ),
