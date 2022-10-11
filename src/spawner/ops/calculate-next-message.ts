@@ -39,14 +39,14 @@ const getGuildWithCounts = (guildId: Snowflake) =>
 const minMinutes = 1
 const maxMinutes = 60 * 3
 
-const maxCount = 100000
+const maxCount = 50000
 
 const nextMessageFromMemberCount = (count: number) => {
   if (count >= maxCount) {
     return DF.addMinutes(Date.now(), minMinutes)
   }
 
-  const extraMinutes = (maxMinutes - minMinutes) * (count / maxCount)
-  const minutes = maxMinutes - Math.round(extraMinutes)
+  const countDiff = maxCount - count
+  const minutes = Math.round(Math.pow(maxMinutes, countDiff / maxCount))
   return DF.addMinutes(Date.now(), minutes)
 }
