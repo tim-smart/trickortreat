@@ -2,8 +2,9 @@ import { Snowflake } from "droff/types"
 import { pipe } from "fp-ts/lib/function"
 import * as RTE from "fp-ts/ReaderTaskEither"
 import * as TE from "fp-ts/TaskEither"
+import { ObjectId } from "mongodb"
 import { DbContext } from "../../contexts"
-import { CandyIds } from "../constants"
+import { Candy, CandyIds } from "../constants"
 
 export type ItemsRepoErr = { _tag: "DbError"; reason: unknown }
 
@@ -45,7 +46,7 @@ export const transfer = (
     )
   )
 
-export const create = (userId: Snowflake, itemId: CandyIds) =>
+export const create = (userId: Snowflake, candy: Candy) =>
   pipe(
     RTE.ask<DbContext>(),
     RTE.chainTaskEitherK(({ itemCollection }) =>
@@ -53,7 +54,8 @@ export const create = (userId: Snowflake, itemId: CandyIds) =>
         () =>
           itemCollection.insertOne({
             userId,
-            itemId,
+            itemId: candy.id,
+            points: candy.sugar,
           }),
         (reason): ItemsRepoErr => ({
           _tag: "DbError",
@@ -62,3 +64,29 @@ export const create = (userId: Snowflake, itemId: CandyIds) =>
       )
     )
   )
+
+export interface TopUser {
+  _id: Snowflake
+  points: number
+}
+
+export const topUsers = pipe(
+  RTE.ask<DbContext>(),
+  RTE.chainTaskEitherK(({ itemCollection }) =>
+    TE.tryCatch(
+      () =>
+        itemCollection
+          .aggregate<TopUser>([
+            { $group: { _id: "$userId", points: { $sum: "$points" } } },
+          ])
+          .sort({ points: -1 })
+          .limit(15)
+          .toArray(),
+
+      (reason): ItemsRepoErr => ({
+        _tag: "DbError",
+        reason,
+      })
+    )
+  )
+)

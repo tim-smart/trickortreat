@@ -6,4 +6,5 @@ export interface InventoryItem {
   _id?: ObjectId
   userId: Snowflake
   itemId: CandyIds
+  points: number
 }

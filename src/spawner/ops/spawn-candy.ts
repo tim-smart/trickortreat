@@ -3,7 +3,7 @@ import { pipe } from "fp-ts/lib/function"
 import * as RTE from "fp-ts/ReaderTaskEither"
 import * as TE from "fp-ts/TaskEither"
 import { WithId } from "mongodb"
-import { ClientContext } from "../../contexts"
+import { CacheContext, ClientContext } from "../../contexts"
 import { Candy, candyFrequencyArray } from "../../inventory/constants"
 import { cacheGet } from "../../utils/cache"
 import { GuildContext } from "../entities"
@@ -16,14 +16,19 @@ export type SpawnCandyErr =
   | { _tag: "SendMessageError"; reason: unknown }
 
 export const run = pipe(
-  CtxRepo.needMessage,
+  CtxRepo.thatNeedSpawn,
   RTE.chainW((ctxs) => RTE.sequenceArray(ctxs.map(sendMessageAndUpdateGuild)))
 )
 
 const sendMessageAndUpdateGuild = (ctx: WithId<GuildContext>) =>
   pipe(
     getChannelId(ctx),
-    RTE.chainW(sendMessage),
+    RTE.chainFirstW((channelId) =>
+      pipe(
+        sendMessage(channelId),
+        RTE.altW(() => removeChannelId(ctx.guildId, channelId))
+      )
+    ),
     RTE.chainW(() => CalcNext.run(ctx.guildId)),
     RTE.chainW((nextMessage) => CtxRepo.upsert(ctx.guildId, nextMessage))
   )
@@ -60,3 +65,11 @@ const sendMessage = (channelId: Snowflake) =>
 
 const randomCandy = (): Candy =>
   candyFrequencyArray[Math.floor(Math.random() * candyFrequencyArray.length)]
+
+const removeChannelId = (guildId: Snowflake, channelId: Snowflake) =>
+  pipe(
+    RTE.ask<CacheContext>(),
+    RTE.map(({ textChannels }) => {
+      textChannels.delete(guildId, channelId)
+    })
+  )

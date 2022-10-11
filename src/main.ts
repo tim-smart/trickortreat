@@ -6,6 +6,7 @@ import { createClient } from "droff"
 import { MongoClient } from "mongodb"
 import { AllContexts, createCacheContext, createDbContext } from "./contexts"
 import * as Rx from "rxjs"
+import * as Leaderboard from "./leaderboard"
 import * as Inventory from "./inventory"
 import * as Spawner from "./spawner"
 
@@ -32,6 +33,7 @@ async function main() {
     cacheEffects$,
 
     Inventory.register(context),
+    Leaderboard.register(context),
     Spawner.register(context)
   ).subscribe()
 }

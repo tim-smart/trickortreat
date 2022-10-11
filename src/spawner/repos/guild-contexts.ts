@@ -31,7 +31,7 @@ export const forGuild = (guildId: Snowflake) =>
     } as GuildCtxRepoError)(identity)
   )
 
-export const needMessage = pipe(
+export const thatNeedSpawn = pipe(
   RTE.ask<DbContext>(),
   RTE.chainTaskEitherK(
     TE.tryCatchK(

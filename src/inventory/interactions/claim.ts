@@ -26,7 +26,7 @@ export const handle = (ctx: InteractionContext) =>
 
     RTE.bind("result", ({ candy }) =>
       pipe(
-        Op.run(ctx, candy.id),
+        Op.run(ctx, candy),
         RTE.mapLeft(
           (e): CommandError => ({
             _tag: "OpError",
