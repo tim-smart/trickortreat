@@ -38,7 +38,7 @@ export const thatNeedSpawn = pipe(
       ({ guildCtxCollection }) =>
         guildCtxCollection
           .find({
-            disabled: { $ne: false },
+            disabled: { $ne: true },
             nextMessage: { $lte: new Date() },
           })
           .toArray(),
