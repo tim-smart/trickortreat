@@ -1,0 +1,8 @@
+{
+  "execMap": {
+    "ts": "node -r ts-node/register"
+  },
+  "watch": [
+    "src/"
+  ]
+}
