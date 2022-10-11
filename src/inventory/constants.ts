@@ -9,13 +9,31 @@ export const candyTypes = [
     frequency: 1,
   },
   {
+    id: "reeses",
+    name: "Reese's",
+    prefix: "some",
+    sugar: 7,
+    image:
+      "https://cdn.shopify.com/s/files/1/0273/8330/0207/products/2065_Reeses_2_Peanut_Butter_Cups_1.5oz_c65b567b-2429-4f35-8142-1c0fa7dd175f_900x.jpg?v=1660809042",
+    frequency: 2,
+  },
+  {
+    id: "skittles",
+    name: "Skittles",
+    prefix: "some",
+    sugar: 7,
+    image:
+      "https://www.skittles.com/cdn-cgi/image/width=277,height=277,f=auto,quality=90/sites/g/files/fnmzdf586/files/migrate-product-files/bam8afcev37jvz2mfpnk.png",
+    frequency: 2,
+  },
+  {
     id: "sour-grape",
     name: "Sour grapes",
     prefix: "some",
-    sugar: 5,
+    sugar: 4,
     image:
       "https://cdn.shopify.com/s/files/1/0580/5945/6680/products/Mayceys-Sour-Grape-Lollies-Mayceys-Candy-Co-1646903840_900x900.jpg?v=1663636123",
-    frequency: 2,
+    frequency: 4,
   },
   {
     id: "cola-fizz",
@@ -24,7 +42,7 @@ export const candyTypes = [
     sugar: 3,
     image:
       "https://www.daffydowndilly.co.uk/wp-content/uploads/2015/03/Giant-Fizzy-Cola-Bottles.jpg",
-    frequency: 3,
+    frequency: 5,
   },
   {
     id: "milk-bottle",

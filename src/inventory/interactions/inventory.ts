@@ -10,8 +10,8 @@ import * as Op from "../ops/get-inventory"
 
 export const command = {
   type: ApplicationCommandOptionType.SUB_COMMAND,
-  name: "inventory",
-  description: "See what's in your pile of candy",
+  name: "check-bag",
+  description: "See what's in your bag of candy",
 }
 
 export const handle = ([x]: InteractionContextWithSubCommand) =>

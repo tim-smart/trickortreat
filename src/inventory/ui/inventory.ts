@@ -6,7 +6,10 @@ export const embed = (inventory: Inventory): Embed => {
   const keys = Object.keys(inventory)
   keys.sort()
   return {
-    title: "Your candy",
+    title: "Your candy 👜",
+    thumbnail: {
+      url: "https://www.merchoid.com/media/mf_webp/jpeg/media/catalog/product/cache/65c63282a2b3bd0da0ec5b004bcde549/z/e/zelda_giants_wallet_bag_1.webp",
+    },
     fields: [
       ...keys
         .filter((id): id is CandyIds => Object.hasOwn(candyTypeMap, id))

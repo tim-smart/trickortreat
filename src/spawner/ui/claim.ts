@@ -11,7 +11,7 @@ export const message = (candy: Candy): CreateMessageParams => {
 
 export const embed = (candy: Candy): Embed => ({
   title: candy.name,
-  description: "Claim the candy before anyone else!",
+  description: "Be the first to claim the candy!",
   fields: [
     {
       name: "Sugar points",
