@@ -20,8 +20,8 @@ const field = (id: CandyIds, count: number): EmbedField => {
   const candy = candyTypeMap[id]
 
   return {
-    name: candy.name,
-    value: `Count: ${count}, Sugar points: ${count * candy.sugar}`,
+    name: `${candy.name} x${count}`,
+    value: `Sugar points: ${count * candy.sugar}`,
   }
 }
 

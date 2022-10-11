@@ -67,3 +67,32 @@ export const upsert = (guildId: Snowflake, nextMessage: Date) =>
       )
     )
   )
+
+export const remove = (guildId: Snowflake) =>
+  pipe(
+    RTE.ask<DbContext>(),
+    RTE.chainTaskEitherK(
+      TE.tryCatchK(
+        ({ guildCtxCollection }) => guildCtxCollection.deleteMany({ guildId }),
+        (reason): GuildCtxRepoError => ({
+          _tag: "DbError",
+          reason,
+        })
+      )
+    )
+  )
+
+export const exists = (guildId: Snowflake) =>
+  pipe(
+    RTE.ask<DbContext>(),
+    RTE.chainTaskEitherK(
+      TE.tryCatchK(
+        ({ guildCtxCollection }) => guildCtxCollection.findOne({ guildId }),
+        (reason): GuildCtxRepoError => ({
+          _tag: "DbError",
+          reason,
+        })
+      )
+    ),
+    RTE.map((a) => a !== null)
+  )

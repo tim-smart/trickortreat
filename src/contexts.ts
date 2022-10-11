@@ -12,7 +12,8 @@ import { createNonParent } from "droff/caches/stores/memory"
 import { Guild } from "droff/types"
 import { Collection, Db } from "mongodb"
 import * as Rx from "rxjs"
-import { CandyGuildContext, InventoryItem } from "./candy/entities"
+import { InventoryItem } from "./inventory/entities"
+import { GuildContext } from "./spawner/entities"
 import * as Caches from "./utils/cache"
 
 export type AllContexts = CacheContext &
@@ -41,14 +42,13 @@ export const createCacheContext = (
 export interface DbContext {
   db: Db
   itemCollection: Collection<InventoryItem>
-  guildCtxCollection: Collection<CandyGuildContext>
+  guildCtxCollection: Collection<GuildContext>
 }
 
 export const createDbContext = (db: Db): DbContext => ({
   db,
   itemCollection: db.collection("items"),
-  guildCtxCollection: db.collection("candy-guild-contexts"),
-  // votesCollection: db.collection("votes"),
+  guildCtxCollection: db.collection("guild-contexts"),
 })
 
 export interface InteractionsContext {

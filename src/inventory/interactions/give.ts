@@ -4,13 +4,15 @@ import {
   ApplicationCommandOption,
   ApplicationCommandOptionType,
   Interaction,
-  MessageFlag,
 } from "droff/types"
 import * as E from "fp-ts/Either"
 import { pipe } from "fp-ts/lib/function"
 import * as TE from "fp-ts/TaskEither"
+import * as RTE from "fp-ts/ReaderTaskEither"
 import { CommandError } from "../../types"
 import { bindInput, respondOrLogError } from "../../utils/commands"
+import { CandyIds, candyTypeMap } from "../constants"
+import * as Op from "../ops/give"
 
 export const command: ApplicationCommandOption = {
   type: ApplicationCommandOptionType.SUB_COMMAND,
@@ -46,16 +48,33 @@ const getOpts = (i: Interaction) =>
 export const handle = ([x]: InteractionContextWithSubCommand) =>
   pipe(
     getOpts(x.interaction),
-    TE.fromEither,
-    TE.chain(({ user, type }) =>
+    RTE.fromEither,
+
+    RTE.chainFirstW(({ user, type }) =>
+      pipe(
+        Op.run(x.member!.user!.id, user.id, type as CandyIds),
+        RTE.mapLeft(
+          (e): CommandError => ({
+            _tag: "OpError",
+            op: "inventory/give",
+            message: `Could not give candy (${e})`,
+          })
+        )
+      )
+    ),
+
+    RTE.chainTaskEitherK(({ user, type }) =>
       TE.tryCatch(
-        () =>
-          x.respond(4)({
-            content: `Got give ${user.id} ${type}`,
-            flags: MessageFlag.EPHEMERAL,
-          }),
+        () => {
+          const candy = candyTypeMap[type as CandyIds]
+          return x.respond(4)({
+            content: `<@${x.member!.user!.id}> gave <@${user.id}> ${
+              candy.prefix
+            } ${candy.name}, worth ${candy.sugar} sugar points!`,
+          })
+        },
         (reason): CommandError => ({ _tag: "RespondError", reason })
       )
     ),
-    TE.getOrElse(respondOrLogError(x))
+    RTE.getOrElse((e) => () => respondOrLogError(x)(e))
   )

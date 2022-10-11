@@ -6,6 +6,13 @@ import * as CalcNext from "./calculate-next-message"
 
 export const run = (guildId: Snowflake) =>
   pipe(
+    CtxRepo.exists(guildId),
+    RTE.chain((exists) => (exists ? RTE.right(null) : register(guildId))),
+    RTE.map(() => {})
+  )
+
+const register = (guildId: Snowflake) =>
+  pipe(
     CalcNext.run(guildId),
     RTE.chainW((nextMessage) => CtxRepo.upsert(guildId, nextMessage))
   )

@@ -7,9 +7,3 @@ export interface InventoryItem {
   userId: Snowflake
   itemId: CandyIds
 }
-
-export interface CandyGuildContext {
-  _id?: ObjectId
-  guildId: Snowflake
-  nextMessage: Date
-}

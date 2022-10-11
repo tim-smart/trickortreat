@@ -5,8 +5,9 @@ import {
 } from "droff/types"
 import * as Rx from "rxjs"
 import * as RxO from "rxjs/operators"
-import { DbContext, InteractionsContext } from "../../contexts"
+import { ClientContext, DbContext, InteractionsContext } from "../../contexts"
 import * as CandyType from "./candy-type"
+import * as Claim from "./claim"
 import * as Give from "./give"
 import * as Inventory from "./inventory"
 
@@ -17,7 +18,7 @@ const command: CreateGlobalApplicationCommandParams = {
 }
 
 export const register = (
-  ctx: InteractionsContext & DbContext
+  ctx: ClientContext & InteractionsContext & DbContext
 ): Rx.Observable<void> => {
   const commands = ctx.ix.guild(command).pipe(RxO.share())
 
@@ -28,15 +29,20 @@ export const register = (
 
   const give = commands.pipe(
     IxO.withSubCommand("give"),
-    RxO.flatMap((a) => Give.handle(a)())
+    RxO.flatMap((a) => Give.handle(a)(ctx)())
   )
 
   const candyAutoComplete = ctx.ix
     .interaction(InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE)
     .pipe(
       IxO.filterByFocusedOption("candy-type"),
-      RxO.flatMap((x) => CandyType.handle(x)())
+      RxO.flatMap((x) => CandyType.handle(x)(ctx)())
     )
 
-  return Rx.merge(inventory, give, candyAutoComplete)
+  const claim = ctx.ix.interaction(InteractionType.MESSAGE_COMPONENT).pipe(
+    IxO.customIdStartsWith("claim-"),
+    RxO.mergeMap((x) => Claim.handle(x)(ctx)())
+  )
+
+  return Rx.merge(inventory, give, candyAutoComplete, claim)
 }

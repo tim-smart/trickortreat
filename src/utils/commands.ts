@@ -9,6 +9,7 @@ import { CommandError, CommandErrorTypes } from "../types"
 const errorMessages: {
   [K in CommandError["_tag"]]: (err: CommandErrorTypes[K]) => string
 } = {
+  ApiError: (e) => `${e.message} (ApiError: ${e.reason})`,
   RespondError: (err) => `Could not respond to command: ${err.reason}`,
   InputError: (e) => `Wrong value for ${e.option}, ${e.message}`,
   OpError: (e) => `${e.message} (${e.op})`,

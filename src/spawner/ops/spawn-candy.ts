@@ -4,10 +4,12 @@ import * as RTE from "fp-ts/ReaderTaskEither"
 import * as TE from "fp-ts/TaskEither"
 import { WithId } from "mongodb"
 import { ClientContext } from "../../contexts"
+import { Candy, candyFrequencyArray } from "../../inventory/constants"
 import { cacheGet } from "../../utils/cache"
-import { CandyGuildContext } from "../entities"
+import { GuildContext } from "../entities"
 import * as CtxRepo from "../repos/guild-contexts"
 import * as CalcNext from "./calculate-next-message"
+import * as Ui from "../ui/claim"
 
 export type SpawnCandyErr =
   | { _tag: "CacheError"; reason: unknown }
@@ -18,7 +20,7 @@ export const run = pipe(
   RTE.chainW((ctxs) => RTE.sequenceArray(ctxs.map(sendMessageAndUpdateGuild)))
 )
 
-const sendMessageAndUpdateGuild = (ctx: WithId<CandyGuildContext>) =>
+const sendMessageAndUpdateGuild = (ctx: WithId<GuildContext>) =>
   pipe(
     getChannelId(ctx),
     RTE.chainW(sendMessage),
@@ -26,7 +28,7 @@ const sendMessageAndUpdateGuild = (ctx: WithId<CandyGuildContext>) =>
     RTE.chainW((nextMessage) => CtxRepo.upsert(ctx.guildId, nextMessage))
   )
 
-const getChannelId = (ctx: WithId<CandyGuildContext>) =>
+const getChannelId = (ctx: WithId<GuildContext>) =>
   pipe(
     cacheGet(({ textChannels }) => textChannels.getForParent(ctx.guildId)),
     RTE.mapLeft(
@@ -47,10 +49,7 @@ const sendMessage = (channelId: Snowflake) =>
     RTE.chainTaskEitherK(
       TE.tryCatchK(
         ({ client }) =>
-          client.createMessage(channelId, {
-            // TODO: Add message components and embed
-            content: "Candy spawn",
-          }),
+          client.createMessage(channelId, Ui.message(randomCandy())),
         (reason): SpawnCandyErr => ({
           _tag: "SendMessageError",
           reason,
@@ -58,3 +57,6 @@ const sendMessage = (channelId: Snowflake) =>
       )
     )
   )
+
+const randomCandy = (): Candy =>
+  candyFrequencyArray[Math.floor(Math.random() * candyFrequencyArray.length)]
