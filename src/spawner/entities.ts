@@ -5,4 +5,5 @@ export interface GuildContext {
   _id?: ObjectId
   guildId: Snowflake
   nextMessage: Date
+  disabled: boolean
 }

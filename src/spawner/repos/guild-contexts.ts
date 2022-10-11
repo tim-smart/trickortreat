@@ -38,6 +38,7 @@ export const thatNeedSpawn = pipe(
       ({ guildCtxCollection }) =>
         guildCtxCollection
           .find({
+            disabled: { $ne: false },
             nextMessage: { $lte: new Date() },
           })
           .toArray(),
@@ -57,7 +58,10 @@ export const upsert = (guildId: Snowflake, nextMessage: Date) =>
         ({ guildCtxCollection }) =>
           guildCtxCollection.updateOne(
             { guildId },
-            { $set: { nextMessage } },
+            {
+              $setOnInsert: { nextMessage },
+              $set: { disabled: false },
+            },
             { upsert: true }
           ),
         (reason): GuildCtxRepoError => ({
@@ -68,12 +72,16 @@ export const upsert = (guildId: Snowflake, nextMessage: Date) =>
     )
   )
 
-export const remove = (guildId: Snowflake) =>
+export const disable = (guildId: Snowflake) =>
   pipe(
     RTE.ask<DbContext>(),
     RTE.chainTaskEitherK(
       TE.tryCatchK(
-        ({ guildCtxCollection }) => guildCtxCollection.deleteMany({ guildId }),
+        ({ guildCtxCollection }) =>
+          guildCtxCollection.updateMany(
+            { guildId },
+            { $set: { disabled: true } }
+          ),
         (reason): GuildCtxRepoError => ({
           _tag: "DbError",
           reason,
