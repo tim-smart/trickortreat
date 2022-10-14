@@ -39,7 +39,7 @@ const getGuildWithCounts = (guildId: Snowflake) =>
 const minMinutes = 1
 const maxMinutes = 60 * 3
 
-const maxCount = 10000
+const maxCount = 5000
 
 const nextMessageFromOnlineCount = (count: number) => {
   if (count >= maxCount) {
