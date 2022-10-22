@@ -58,7 +58,7 @@ export interface DbContext {
 export const createDbContext = (db: Db): DbContext => ({
   db,
   itemCollection: db.collection("items"),
-  guildCtxCollection: db.collection("guild-contexts"),
+  guildCtxCollection: db.collection("guildContexts"),
 })
 
 export interface InteractionsContext {
